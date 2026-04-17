@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shamsiddinov Xabibullo | Web Sahifa</title>
+
+  <style>
+    :root {
+      --bg: #030711;
+      --bg2: #07111f;
+      --cyan: #00e5ff;
+      --cyan-soft: rgba(0, 229, 255, 0.18);
+      --blue: #3b82f6;
+      --green: #00ff9d;
+      --text: #d9faff;
+      --muted: #8fb9c4;
+      --panel: rgba(3, 10, 24, 0.72);
+      --border: rgba(0, 229, 255, 0.25);
+      --shadow: 0 0 30px rgba(0, 229, 255, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Courier New", monospace;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(0, 229, 255, 0.08), transparent 30%),
+        radial-gradient(circle at top right, rgba(59, 130, 246, 0.12), transparent 28%),
+        linear-gradient(135deg, var(--bg), var(--bg2));
+      overflow: hidden;
+      position: relative;
+    }
+
+    canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      opacity: 0.55;
+    }
+
+    .grid {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background-image:
+        linear-gradient(rgba(0, 229, 255, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 229, 255, 0.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+      mask-image: radial-gradient(circle at center, black 45%, transparent 100%);
+      pointer-events: none;
+    }
+
+    .glow-orb {
+      position: fixed;
+      width: 420px;
+      height: 420px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0, 229, 255, 0.12), transparent 65%);
+      filter: blur(30px);
+      z-index: 0;
+      pointer-events: none;
+      animation: floatOrb 8s ease-in-out infinite;
+    }
+
+    .glow-orb.one {
+      top: -120px;
+      left: -80px;
+    }
+
+    .glow-orb.two {
+      right: -100px;
+      bottom: -140px;
+      animation-delay: 2s;
+    }
+
+    @keyframes floatOrb {
+      0%, 100% { transform: translateY(0) translateX(0); }
+      50% { transform: translateY(18px) translateX(10px); }
+    }
+
+    .scene {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      opacity: 0.28;
+    }
+
+    .coder {
+      position: absolute;
+      right: 8%;
+      bottom: 6%;
+      width: 340px;
+      height: 280px;
+      filter: drop-shadow(0 0 25px rgba(0, 229, 255, 0.12));
+    }
+
+    .desk {
+      position: absolute;
+      bottom: 18px;
+      right: 0;
+      width: 300px;
+      height: 10px;
+      background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+      box-shadow: 0 0 12px rgba(0, 229, 255, 0.4);
+    }
+
+    .monitor {
+      position: absolute;
+      right: 80px;
+      bottom: 88px;
+      width: 150px;
+      height: 92px;
+      border: 2px solid rgba(0, 229, 255, 0.65);
+      border-radius: 10px;
+      background: rgba(0, 14, 28, 0.75);
+      box-shadow: 0 0 20px rgba(0, 229, 255, 0.28);
+      overflow: hidden;
+    }
+
+    .monitor::before {
+      content: "";
+      position: absolute;
+      inset: 8px;
+      background:
+        linear-gradient(transparent 0 20%, rgba(0,229,255,0.08) 20% 22%, transparent 22% 40%, rgba(0,255,157,0.08) 40% 42%, transparent 42% 60%, rgba(0,229,255,0.08) 60% 62%, transparent 62% 100%),
+        radial-gradient(circle at center, rgba(0, 229, 255, 0.12), transparent 70%);
+      animation: flicker 2.8s linear infinite;
+    }
+
+    .monitor::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: -16px;
+      transform: translateX(-50%);
+      width: 16px;
+      height: 16px;
+      background: rgba(0, 229, 255, 0.45);
+      clip-path: polygon(40% 0, 60% 0, 100% 100%, 0 100%);
+    }
+
+    @keyframes flicker {
+      0%, 100% { opacity: 0.95; }
+      50% { opacity: 0.72; }
+    }
+
+    .chair {
+      position: absolute;
+      right: 35px;
+      bottom: 35px;
+      width: 70px;
+      height: 100px;
+      border-radius: 26px 26px 12px 12px;
+      background: rgba(0, 229, 255, 0.18);
+      border: 1px solid rgba(0, 229, 255, 0.35);
+    }
+
+    .head {
+      position: absolute;
+      right: 146px;
+      bottom: 112px;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: rgba(0, 229, 255, 0.22);
+      border: 1px solid rgba(0, 229, 255, 0.4);
+    }
+
+    .body-shape {
+      position: absolute;
+      right: 124px;
+      bottom: 52px;
+      width: 90px;
+      height: 88px;
+      border-radius: 35px 35px 12px 12px;
+      background: rgba(0, 229, 255, 0.15);
+      border: 1px solid rgba(0, 229, 255, 0.3);
+      transform: skew(-8deg);
+    }
+
+    .arm {
+      position: absolute;
+      right: 160px;
+      bottom: 90px;
+      width: 70px;
+      height: 10px;
+      border-radius: 20px;
+      background: rgba(0, 229, 255, 0.28);
+      transform: rotate(-18deg);
+      transform-origin: right center;
+    }
+
+    .wrapper {
+      position: relative;
+      z-index: 2;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .card {
+      width: min(920px, 100%);
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      box-shadow:
+        var(--shadow),
+        inset 0 0 0 1px rgba(255,255,255,0.03);
+      backdrop-filter: blur(10px);
+      overflow: hidden;
+      position: relative;
+      animation: softAppear 1s ease;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(120deg, transparent 0 20%, rgba(0,229,255,0.05) 40%, transparent 60% 100%);
+      pointer-events: none;
+    }
+
+    @keyframes softAppear {
+      from {
+        opacity: 0;
+        transform: translateY(16px) scale(0.985);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px 22px;
+      border-bottom: 1px solid rgba(0, 229, 255, 0.12);
+      background: rgba(0, 6, 18, 0.6);
+    }
+
+    .dots {
+      display: flex;
+      gap: 8px;
+    }
+
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      box-shadow: 0 0 10px currentColor;
+    }
+
+    .dot.red { color: #ff5f57; background: currentColor; }
+    .dot.yellow { color: #febc2e; background: currentColor; }
+    .dot.green { color: #28c840; background: currentColor; }
+
+    .terminal-label {
+      color: var(--muted);
+      font-size: 0.95rem;
+      white-space: nowrap;
+    }
+
+    .content {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 28px;
+      padding: 34px;
+    }
+
+    .left {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      width: fit-content;
+      padding: 8px 14px;
+      border: 1px solid rgba(0, 229, 255, 0.22);
+      border-radius: 999px;
+      background: rgba(0, 229, 255, 0.06);
+      color: var(--green);
+      margin-bottom: 18px;
+      font-size: 0.92rem;
+    }
+
+    .badge::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 10px var(--green);
+      animation: pulse 1.8s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.25); opacity: 0.7; }
+    }
+
+    h1 {
+      margin: 0 0 14px;
+      font-size: clamp(2rem, 4vw, 3.7rem);
+      line-height: 1.05;
+      letter-spacing: 0.5px;
+      text-shadow: 0 0 14px rgba(0, 229, 255, 0.18);
+    }
+
+    .highlight {
+      color: var(--cyan);
+    }
+
+    .typing {
+      display: inline-block;
+      border-right: 2px solid var(--cyan);
+      white-space: nowrap;
+      overflow: hidden;
+      animation: blink 0.8s infinite;
+    }
+
+    @keyframes blink {
+      50% { border-color: transparent; }
+    }
+
+    .desc {
+      font-size: 1.06rem;
+      line-height: 1.8;
+      color: var(--muted);
+      max-width: 620px;
+      margin-bottom: 26px;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-bottom: 26px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 14px 22px;
+      border-radius: 14px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: 0.28s ease;
+      border: 1px solid transparent;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, rgba(0,229,255,0.18), rgba(59,130,246,0.16));
+      color: var(--text);
+      border-color: rgba(0, 229, 255, 0.28);
+      box-shadow: 0 0 18px rgba(0, 229, 255, 0.15);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 26px rgba(0, 229, 255, 0.28);
+      background: linear-gradient(135deg, rgba(0,229,255,0.28), rgba(59,130,246,0.2));
+    }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.02);
+      color: var(--green);
+      border-color: rgba(0, 255, 157, 0.22);
+    }
+
+    .btn-secondary:hover {
+      transform: translateY(-2px);
+      background: rgba(0,255,157,0.08);
+      box-shadow: 0 0 18px rgba(0,255,157,0.14);
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+
+    .stat {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(0, 229, 255, 0.08);
+      border-radius: 18px;
+      padding: 16px;
+    }
+
+    .stat strong {
+      display: block;
+      color: var(--cyan);
+      font-size: 1.2rem;
+      margin-bottom: 6px;
+    }
+
+    .stat span {
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .right {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .panel {
+      background: rgba(255,255,255,0.025);
+      border: 1px solid rgba(0,229,255,0.12);
+      border-radius: 20px;
+      padding: 18px;
+      box-shadow: inset 0 0 20px rgba(0, 229, 255, 0.02);
+    }
+
+    .panel h3 {
+      margin: 0 0 14px;
+      color: var(--cyan);
+      font-size: 1rem;
+      letter-spacing: 1px;
+    }
+
+    .info-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .info-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: rgba(0, 229, 255, 0.03);
+      border-left: 3px solid rgba(0, 255, 157, 0.55);
+    }
+
+    .label {
+      font-size: 0.82rem;
+      color: var(--green);
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+    }
+
+    .value {
+      color: var(--text);
+      word-break: break-word;
+    }
+
+    .value a {
+      color: var(--cyan);
+      text-decoration: none;
+      transition: 0.25s ease;
+    }
+
+    .value a:hover {
+      color: white;
+      text-shadow: 0 0 10px rgba(0, 229, 255, 0.45);
+    }
+
+    .code-box {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .code-box pre {
+      margin: 0;
+      white-space: pre-wrap;
+      line-height: 1.7;
+      color: #b8f5ff;
+      font-size: 0.95rem;
+    }
+
+    .code-box .accent {
+      color: var(--green);
+    }
+
+    .footer-line {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 0.92rem;
+      text-align: center;
+      opacity: 0.85;
+    }
+
+    @media (max-width: 920px) {
+      .content {
+        grid-template-columns: 1fr;
+      }
+
+      .coder {
+        width: 260px;
+        height: 220px;
+        right: 4%;
+        bottom: 2%;
+      }
+    }
+
+    @media (max-width: 640px) {
+      body {
+        overflow: auto;
+      }
+
+      .wrapper {
+        align-items: flex-start;
+        padding: 18px;
+      }
+
+      .card {
+        margin: 18px 0;
+      }
+
+      .content {
+        padding: 22px;
+      }
+
+      .stats {
+        grid-template-columns: 1fr;
+      }
+
+      .topbar {
+        padding: 14px 16px;
+      }
+
+      .terminal-label {
+        font-size: 0.82rem;
+      }
+
+      .coder {
+        opacity: 0.18;
+        transform: scale(0.85);
+      }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="matrix" aria-hidden="true"></canvas>
+  <div class="grid"></div>
+  <div class="glow-orb one"></div>
+  <div class="glow-orb two"></div>
+
+  <div class="scene" aria-hidden="true">
+    <div class="coder">
+      <div class="monitor"></div>
+      <div class="chair"></div>
+      <div class="head"></div>
+      <div class="body-shape"></div>
+      <div class="arm"></div>
+      <div class="desk"></div>
+    </div>
+  </div>
+
+  <main class="wrapper">
+    <section class="card">
+      <div class="topbar">
+        <div class="dots">
+          <span class="dot red"></span>
+          <span class="dot yellow"></span>
+          <span class="dot green"></span>
+        </div>
+        <div class="terminal-label">habibullo@portfolio:~</div>
+      </div>
+
+      <div class="content">
+        <div class="left">
+          <div class="badge">System Active</div>
+
+          <h1>
+            Salom, bu <span class="highlight">Shamsiddinov Xabibullo</span>ning
+            <span class="typing" id="typing-text">web sahifasi</span>
+          </h1>
+
+          <p class="desc">
+            Zamonaviy, coder-style, neon dizayndagi shaxsiy sahifa.
+            Men dasturlash, web development va kreativ loyihalar bilan shug‘ullanaman.
+            Men bilan Telegram orqali bog‘lanishingiz mumkin.
+          </p>
+
+          <div class="actions">
+            <a class="btn btn-primary" href="https://t.me/khabib0609" target="_blank" rel="noopener noreferrer">
+              Telegram orqali bog‘lanish
+            </a>
+            <a class="btn btn-secondary" href="#contact">
+              Contact info
+            </a>
+          </div>
+
+          <div class="stats">
+            <div class="stat">
+              <strong>01</strong>
+              <span>Personal Web Page</span>
+            </div>
+            <div class="stat">
+              <strong>24/7</strong>
+              <span>Creative Coder Vibe</span>
+            </div>
+            <div class="stat">
+              <strong>100%</strong>
+              <span>Custom Style</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="right">
+          <div class="panel" id="contact">
+            <h3>CONTACT DATA</h3>
+            <div class="info-list">
+              <div class="info-item">
+                <div class="label">Ism</div>
+                <div class="value">Shamsiddinov Xabibullo</div>
+              </div>
+
+              <div class="info-item">
+                <div class="label">Telegram</div>
+                <div class="value">
+                  <a href="https://t.me/khabib0609" target="_blank" rel="noopener noreferrer">@khabib0609</a>
+                </div>
+              </div>
+
+              <div class="info-item">
+                <div class="label">Status</div>
+                <div class="value">Student | Web enthusiast | Future developer</div>
+              </div>
+
+              <div class="info-item">
+                <div class="label">Location</div>
+                <div class="value">Uzbekistan</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel code-box">
+            <h3>LIVE STATUS</h3>
+            <pre>
+<span class="accent">const</span> developer = {
+  name: "Shamsiddinov Xabibullo",
+  mode: "building cool things",
+  contact: "@khabib0609",
+  theme: "black / blue coder style"
+};
+
+<span class="accent">console.log</span>("Welcome to my page");
+            </pre>
+          </div>
+
+          <div class="footer-line">
+            Designed with neon cyber style • Matrix background • Coder atmosphere
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const canvas = document.getElementById("matrix");
+    const ctx = canvas.getContext("2d");
+
+    const chars = "0101010011010101011001010110010101";
+    const fontSize = 16;
+    let columns = 0;
+    let drops = [];
+
+    function setupMatrix() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      columns = Math.floor(canvas.width / fontSize);
+      drops = Array(columns).fill(0).map(() =>
+        Math.floor(Math.random() * (canvas.height / fontSize))
+      );
+    }
+
+    function drawMatrix() {
+      ctx.fillStyle = "rgba(3, 7, 17, 0.09)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.font = fontSize + "px monospace";
+
+      for (let i = 0; i < drops.length; i++) {
+        const text = chars.charAt(Math.floor(Math.random() * chars.length));
+        const isBright = Math.random() > 0.82;
+
+        ctx.fillStyle = isBright ? "#00ff9d" : "#00e5ff";
+        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+          drops[i] = 0;
+        }
+
+        drops[i]++;
+      }
+
+      requestAnimationFrame(drawMatrix);
+    }
+
+    setupMatrix();
+    window.addEventListener("resize", setupMatrix);
+    drawMatrix();
+
+    const typingEl = document.getElementById("typing-text");
+    const words = ["web sahifasi", "portfolio page", "coder zone", "digital profile"];
+    let wordIndex = 0;
+    let charIndex = 0;
+    let deleting = false;
+
+    function typeLoop() {
+      const currentWord = words[wordIndex];
+
+      if (!deleting) {
+        typingEl.textContent = currentWord.slice(0, charIndex + 1);
+        charIndex++;
+
+        if (charIndex === currentWord.length) {
+          deleting = true;
+          setTimeout(typeLoop, 1200);
+          return;
+        }
+      } else {
+        typingEl.textContent = currentWord.slice(0, charIndex - 1);
+        charIndex--;
+
+        if (charIndex === 0) {
+          deleting = false;
+          wordIndex = (wordIndex + 1) % words.length;
+        }
+      }
+
+      setTimeout(typeLoop, deleting ? 45 : 85);
+    }
+
+    typeLoop();
+  </script>
+</body>
+</html>
